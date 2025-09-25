@@ -11,7 +11,9 @@ enum Status {
   PENDING
   APPROVED
   COMPLETED
+  REJECTED
 }
+ 
 
 enum Role {
   ADMIN
@@ -29,23 +31,13 @@ model User {
   bookings  Booking[]   
 }
 
-model GuestBooking {
-  id         Int      @id @default(autoincrement())
-  name       String
-  email      String
-  service    Service  @relation(fields: [serviceId], references: [id])
-  serviceId  Int
-  date       DateTime
-  status     Status   @default(PENDING)
-  createdAt  DateTime @default(now())
-}
-
 
 model Service {
   id          Int       @id @default(autoincrement())
   serviceType String
   description String?
   price       Float
+  status      Status    @default(PENDING) 
   bookings    Booking[]
   GuestBooking GuestBooking[]
 }
@@ -54,6 +46,17 @@ model Booking {
   id         Int      @id @default(autoincrement())
   customer   User?    @relation(fields: [customerId], references: [id])
   customerId Int?
+  service    Service  @relation(fields: [serviceId], references: [id])
+  serviceId  Int
+  date       DateTime
+  status     Status   @default(PENDING)
+  createdAt  DateTime @default(now())
+}
+
+model GuestBooking {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
   service    Service  @relation(fields: [serviceId], references: [id])
   serviceId  Int
   date       DateTime

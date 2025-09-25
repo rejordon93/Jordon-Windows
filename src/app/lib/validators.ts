@@ -33,6 +33,22 @@ export const guestBookingSchema = z.object({
   serviceId: z.number(), // link to a service
   date: z.string(), // ISO string from frontend; will convert to Date in API
 });
+export const bookingSchema = z.object({
+  customerId: z.number().optional(), // optional for guest bookings
+  serviceId: z.number(),
+  date: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid date format",
+    })
+    .transform((val) => new Date(val)), // convert string to Date
+  status: z.enum(["PENDING", "APPROVED", "COMPLETED"]).optional(), // optional, default handled in Prisma
+});
+
+export const approveSchema = z.object({
+  serviceId: z.number().int(),
+  approved: z.boolean(), // true = approve, false = reject
+});
 
 // Types
 export type LoginInput = z.infer<typeof loginSchema>;
@@ -40,3 +56,5 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type updateProfileInput = z.infer<typeof updateProfileSchema>;
 export type servuceInput = z.infer<typeof serviceSchema>;
 export type GuestBookingInput = z.infer<typeof guestBookingSchema>;
+export type BookingInput = z.infer<typeof bookingSchema>;
+export type approveInput = z.infer<typeof approveSchema>;
